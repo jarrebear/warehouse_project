@@ -28,7 +28,7 @@ def generate_launch_description():
     amcl_config_f = PythonExpression([
         "'amcl_config_sim.yaml' if '",
         map_f,
-        "' == 'warehouse_map_sim.yaml' else ' amcl_config_real.yaml'"
+        "' == 'warehouse_map_sim.yaml' else 'amcl_config_real.yaml'"
     ])
 
     map_path = PathJoinSubstitution([
