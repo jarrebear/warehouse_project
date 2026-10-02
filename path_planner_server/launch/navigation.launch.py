@@ -10,59 +10,61 @@ from launch.substitutions import LaunchConfiguration, PathJoinSubstitution, Pyth
 
 def generate_launch_description():
 
-    map_file_arg = DeclareLaunchArgument(
-        "map_file",
-        default_value="warehouse_map_sim.yaml"
+    sim_time_arg = DeclareLaunchArgument(
+        "use_sim_time",
+        default_value="True"
     )
 
-    map_f = LaunchConfiguration("map_file")
+    sim_f = LaunchConfiguration("use_sim_time")
 
-    # True for simulation map, False for real map
-    sim_f = PythonExpression([
-        "'True' if '",
-        map_f,
-        "' == 'warehouse_map_sim.yaml' else 'False'"
+    map_config_f = PythonExpression([
+        "'warehouse_map_sim.yaml' if '",
+        sim_f,
+        "' == 'True' else 'warehouse_map_real.yaml'"
     ])
 
-    # sim config file for simulation map, real config file for for real map
+
+    # sim config file for simulation time, real config file for for real time
     amcl_config_f = PythonExpression([
         "'amcl_config_sim.yaml' if '",
-        map_f,
-        "' == 'warehouse_map_sim.yaml' else 'amcl_config_real.yaml'"
+        sim_f,
+        "' == 'True' else 'amcl_config_real.yaml'"
     ])
 
-    # sim planner config file for simulation map, real planner config file for for real map
+    amcl_config_f = PythonExpression([
+        "'amcl_config_sim.yaml' if '",
+        sim_f,
+        "' == 'True' else 'amcl_config_real.yaml'"
+    ])
+
     nav2_config_f = PythonExpression([
         "'planner_sim.yaml' if '",
-        map_f,
-        "' == 'warehouse_map_sim.yaml' else 'planner_real.yaml'"
+        sim_f,
+        "' == 'True' else 'planner_real.yaml'"
     ])
 
-    # sim controller config file for simulation map, real controller config file for for real map
     controller_config_f = PythonExpression([
         "'controller_sim.yaml' if '",
-        map_f,
-        "' == 'warehouse_map_sim.yaml' else 'controller_real.yaml'"
+        sim_f,
+        "' == 'True' else 'controller_real.yaml'"
     ])
 
-    # sim bt_navigator config file for simulation map, real bt_navigator config file for for real map
     bt_navigator_config_f = PythonExpression([
         "'bt_navigator_sim.yaml' if '",
-        map_f,
-        "' == 'warehouse_map_sim.yaml' else 'bt_navigator_real.yaml'"
+        sim_f,
+        "' == 'True' else 'bt_navigator_real.yaml'"
     ])
 
-    # sim recovery config file for simulation map, real recovery config file for for real map
     recovery_config_f = PythonExpression([
         "'recoveries_sim.yaml' if '",
-        map_f,
-        "' == 'warehouse_map_sim.yaml' else 'recoveries_real.yaml'"
+        sim_f,
+        "' == 'True' else 'recoveries_real.yaml'"
     ])
 
     map_path = PathJoinSubstitution([
         get_package_share_directory("map_server"),
         "config",
-        map_f,
+        map_config_f,
     ])
 
     amcl_config_path = PathJoinSubstitution([
@@ -179,7 +181,7 @@ def generate_launch_description():
     )
 
     return LaunchDescription([
-        map_file_arg,
+        sim_time_arg,
         map_node,
         amcl_node,
         planner_server,
